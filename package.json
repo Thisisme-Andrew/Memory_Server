@@ -1,10 +1,10 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node index.js",
-    "build": "react-scripts build",
+    "start": "node server.js",
+    "build": "echo 'No build step needed for backend-only app'",
     "test": "echo \"No tests yet\""
   },
   "keywords": [],
@@ -19,7 +19,6 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mongodb": "^6.13.1",
-    "mysql2": "^3.13.0",
-    "react-scripts": "^5.0.1"
+    "mysql2": "^3.13.0"
   }
 }
