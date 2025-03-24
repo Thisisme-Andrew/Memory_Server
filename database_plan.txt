@@ -1,0 +1,23 @@
+users: {
+  id: int,
+  email: string,
+  password: string,
+  firstName: string,
+  lastName: string,
+  memories(byId): int[]
+}
+
+memoryIds:{
+  memoryId: int
+}
+
+memories {
+  ownerId: int,
+  memoryId: int,
+  collaborater_ids: int[],
+  locationId: int,
+
+  
+}
+
+react leaflet (map thing)
