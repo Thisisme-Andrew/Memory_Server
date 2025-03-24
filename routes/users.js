@@ -4,7 +4,7 @@ import { createUser, loginUser, editUser, removeUser, retreiveUser, retreiveAllU
 const router = express.Router();
 
 router.post('/register', createUser);
-router.post('/login', loginUser);
+router.get('/login', loginUser);
 router.put('/edit', editUser);
 router.delete('/remove', removeUser);
 router.get('/:id', retreiveUser);
