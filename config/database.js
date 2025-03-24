@@ -11,4 +11,3 @@ export const config = {
   port: process.env.PORT,
   ssl: {ca: fs.readFileSync("./config/DigiCertGlobalRootCA.crt.pem")}
 };
-console.log(config);
