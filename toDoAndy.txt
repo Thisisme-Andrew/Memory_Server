@@ -1,0 +1,3 @@
+-check how the front end would pass information through the req and res objects, then check if this works with the current controller functions
+- take care of sqlMessages in the error and how they pass to frontend
+- check removeusers in usercontoller
