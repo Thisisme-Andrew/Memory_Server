@@ -9,8 +9,8 @@ export const initUsers = async () => {
     return true;
   } catch (err) {
     console.log("User table could not be created.")
-    console.log(err);
-    return false;
+    console.error(err);
+    throw err;
   }
 }
 
@@ -24,8 +24,8 @@ export const addUser = async (firstName, lastName, email, password) => {
     return {body: response};
   } catch (err) {
     console.log("Could not add user");
-    console.log(err);
-    return {err};
+    console.error("Error in userServices(addUser): " + err);
+    throw err;
   }
 }
 
@@ -38,8 +38,8 @@ export const updateUser = async (firstName, lastName, email, userID) => {
     return {body: response};
   } catch (err) {
     console.log("Could not update user");
-    console.log(err);
-    return {err: err};
+    console.error(err);
+    throw err ;
   }
 }
 
@@ -50,8 +50,8 @@ export const deleteUser = async (userID) => {
     return {body: response};
   } catch (err) {
     console.log("user deletion unsuccessful");
-    console.log(err);
-    return {err: err};
+    console.error(err);
+    throw err;
   }
 }
 
@@ -63,8 +63,8 @@ export const getUserByID = async (userID) => {
     return {body: user};
   } catch (err) {
     console.log("couldn't get user info");
-    console.log(err);
-    return {err: err};
+    console.error(err);
+    throw err;
   }
 }
 
@@ -77,8 +77,8 @@ export const login = async (email, password) => {
     return {body: user};
   } catch (err) {
     console.log("couldn't find user with those credentials");
-    console.log(err);
-    return {err: err};
+    console.error(err);
+    throw err;
   }
 }
 
@@ -97,8 +97,8 @@ export const getAllUsers = async () => {
     return {body: userList};
   } catch (err) {
     console.log("couldn't retreive all users");
-    console.log(err);
-    return {err: err};
+    console.error(err);
+    throw err;
   }
 }
 
@@ -110,7 +110,7 @@ export const resetPassword = async (email, password) => {
     return {body: response};
   } catch (err) {
     console.log("Could not update user");
-    console.log(err);
-    return {err: err};
+    console.error(err);
+    throw err;
   }
 }
