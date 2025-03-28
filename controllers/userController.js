@@ -1,10 +1,15 @@
 import { addUser, updateUser, deleteUser, getUserByID, login, getAllUsers, resetPassword } from '../services/users/userServices.js';
 
 export const createUser = async (req, res) => {
-  let newUser = req.body
-  
+  let { email, firstName, lastName, password } = req.body;
+  console.log("req.body received: " + JSON.stringify(req.body));
+  console.log("email: " + email);
+  console.log("firstName: " + firstName);
+  console.log("lastName: " + lastName);
+  console.log("password: " + password);
+
   try {
-    const response = await addUser(newUser);
+    const response = await addUser(firstName, lastName, email, password);
     if(response.err) {
       throw new Error('Failed to create user');
     }
@@ -43,10 +48,10 @@ export const editUser = async (req, res) => {
 }
 
 export const removeUser = async (req, res) => {
-  let { id } = req.body;
+  let { userID } = req.body;
 
   try {
-    const response = await deleteUser(id);
+    const response = await deleteUser(userID);
     if(response.err) {
       throw new Error('Failed to remove user');
     }
@@ -57,10 +62,10 @@ export const removeUser = async (req, res) => {
 }
 
 export const retreiveUser = async (req, res) => {
-  let { id } = req.body;
+  let { userID } = req.body;
 
   try {
-    const response = await getUserByID(id);
+    const response = await getUserByID(userID);
     if(response.err) {
       throw new Error('Failed to get user');
     }

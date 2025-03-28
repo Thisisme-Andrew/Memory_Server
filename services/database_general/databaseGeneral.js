@@ -23,12 +23,6 @@ const connectToDatabase = async () => {
 
 // columnsAndTypes should be stored as an object, where key is the column name and value is the type. The first pair should be the primary key
 export const createTable = async (tableName, columnsAndTypes) => {
-    // try {
-    //     deleteTable(tableName);
-    // }catch (e) {
-    //     console.log(e);
-    //     return;
-    // }
     const conn = await connectToDatabase();
 
     let iterator = 0;
@@ -91,6 +85,8 @@ export const insertRow = async (tableName, columnsAndValues) => {
 
   const placeholders = valuesToBeAdded.map(() => "?").join(", ");
   queryString = queryString.concat(placeholders, ");");
+  console.log("queryString: " + queryString);
+  console.log("valuesToBeAdded: " + valuesToBeAdded);
 
   let [response] = await conn.query(queryString, valuesToBeAdded)
 

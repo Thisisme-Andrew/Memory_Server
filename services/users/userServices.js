@@ -9,13 +9,14 @@ export const initUsers = async () => {
     return true;
   } catch (err) {
     console.log("User table could not be created.")
-    console.error(err);
+    console.log(err);
     return false;
   }
 }
 
 export const addUser = async (firstName, lastName, email, password) => {
   const newUser = User(firstName, lastName, email, password);
+  console.log(newUser);
   
   try {
     const response = await insertRow(USER_TABLE_NAME, newUser);
@@ -23,8 +24,8 @@ export const addUser = async (firstName, lastName, email, password) => {
     return {body: response};
   } catch (err) {
     console.log("Could not add user");
-    console.error(err);
-    return {err: err};
+    console.log(err);
+    return {err};
   }
 }
 
@@ -37,7 +38,7 @@ export const updateUser = async (firstName, lastName, email, userID) => {
     return {body: response};
   } catch (err) {
     console.log("Could not update user");
-    console.error(err);
+    console.log(err);
     return {err: err};
   }
 }
@@ -49,7 +50,7 @@ export const deleteUser = async (userID) => {
     return {body: response};
   } catch (err) {
     console.log("user deletion unsuccessful");
-    console.error(err);
+    console.log(err);
     return {err: err};
   }
 }
@@ -62,7 +63,7 @@ export const getUserByID = async (userID) => {
     return {body: user};
   } catch (err) {
     console.log("couldn't get user info");
-    console.error(err);
+    console.log(err);
     return {err: err};
   }
 }
@@ -76,7 +77,7 @@ export const login = async (email, password) => {
     return {body: user};
   } catch (err) {
     console.log("couldn't find user with those credentials");
-    console.error(err);
+    console.log(err);
     return {err: err};
   }
 }
@@ -96,7 +97,7 @@ export const getAllUsers = async () => {
     return {body: userList};
   } catch (err) {
     console.log("couldn't retreive all users");
-    console.error(err);
+    console.log(err);
     return {err: err};
   }
 }
@@ -109,7 +110,7 @@ export const resetPassword = async (email, password) => {
     return {body: response};
   } catch (err) {
     console.log("Could not update user");
-    console.error(err);
+    console.log(err);
     return {err: err};
   }
 }

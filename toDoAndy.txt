@@ -1,3 +1,24 @@
 -check how the front end would pass information through the req and res objects, then check if this works with the current controller functions
 - take care of sqlMessages in the error and how they pass to frontend
 - check removeusers in usercontoller
+
+get all memories
+get all memories for user
+add images
+remove images
+get all images of memories
+memories:
+ - images
+ - The creater
+ - the list of collbaorators
+ - lat: float
+ - long: float
+
+memory: {
+  images: [],
+  createrID: "",
+  collbaorators: [],
+  longatide: float,
+  latitude: float,
+}
+- images as url (preferred) or file 
