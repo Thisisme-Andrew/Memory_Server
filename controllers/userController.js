@@ -6,7 +6,7 @@ export const createUser = async (req, res) => {
 
   try {
     const response = await addUser(firstName, lastName, email, password);
-    res.status(201).json({firstName: newUser.firstName, lastName: newUser.lastName, email: newUser.email, userID: response.insertId});
+    res.status(201).json({firstName: response.firstName, lastName: response.lastName, email: response.email, userID: response.insertId});
   }catch (err) {
     console.log("error in controller (createUser): " + err);
     res.status(500).json({ err });
