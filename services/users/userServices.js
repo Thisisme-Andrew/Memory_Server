@@ -20,8 +20,9 @@ export const addUser = async (firstName, lastName, email, password) => {
   
   try {
     const response = await insertRow(USER_TABLE_NAME, newUser);
-    console.log("User created successfully: " + JSON.stringify(response));
-    return {response};
+    const userToReturn = {userID: response.insertId, firstName, lastName, email}
+    console.log("User created successfully: " + JSON.stringify(userToReturn));
+    return userToReturn;
   } catch (err) {
     console.log("Could not add user");
     console.error("Error in userServices(addUser): " + err);
