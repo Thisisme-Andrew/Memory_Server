@@ -36,7 +36,7 @@ export const updateUser = async (firstName, lastName, email, userID) => {
   try {
     const response = await updateRow(USER_TABLE_NAME, PRIMARY_KEY_NAME, userID, newUser);
     console.log("User updated successfully");
-    return {response};
+    return response;
   } catch (err) {
     console.log("Could not update user");
     console.error(err);
@@ -48,7 +48,7 @@ export const deleteUser = async (userID) => {
   try {
     const response = await deleteRow(USER_TABLE_NAME, PRIMARY_KEY_NAME, userID);
     console.log("user deleted successfully");
-    return {response};
+    return response;
   } catch (err) {
     console.log("user deletion unsuccessful");
     console.error(err);
@@ -59,9 +59,9 @@ export const deleteUser = async (userID) => {
 export const getUserByID = async (userID) => {
   try {
     const response = await getRowByID(USER_TABLE_NAME, PRIMARY_KEY_NAME, userID);
-    const user = {id: response.id, firstName: response.firstName, lastName: response.lastName, email: response.email};
+    const user = {userID: response.id, firstName: response.firstName, lastName: response.lastName, email: response.email};
     console.log("user retrieved successfully");
-    return {user};
+    return user;
   } catch (err) {
     console.log("couldn't get user info");
     console.error(err);
@@ -71,11 +71,15 @@ export const getUserByID = async (userID) => {
 
 export const login = async (email, password) => {
   let loginInfo = {email, password}
+
   try {
     const response = await getRow(USER_TABLE_NAME, loginInfo);
-    const user = {id: response.id, firstName: response.firstName, lastName: response.lastName, email: response.email};
-    console.log("user verified");
-    return {user};
+    if(!response) {
+      throw "Couldn't find user with those credentials.";
+    }
+    const user = {userID: response.id, firstName: response.firstName, lastName: response.lastName, email: response.email};
+    console.log("user " + response.id + " verified");
+    return user;
   } catch (err) {
     console.log("couldn't find user with those credentials");
     console.error(err);
@@ -95,7 +99,7 @@ export const getAllUsers = async () => {
     }
 
     console.log("retreived all users: " + JSON.stringify(userList));
-    return {userList};
+    return userList;
   } catch (err) {
     console.log("couldn't retreive all users");
     console.error(err);
@@ -108,7 +112,7 @@ export const resetPassword = async (email, password) => {
   try {
     const response = await updateRow(USER_TABLE_NAME, "email", email_formatted, { password });
     console.log("User updated successfully");
-    return {response};
+    return response;
   } catch (err) {
     console.log("Could not update user");
     console.error(err);

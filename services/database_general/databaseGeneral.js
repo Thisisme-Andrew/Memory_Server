@@ -166,11 +166,11 @@ export const getRow = async (tableName, columnsAndValues) => {
     iterator++;
   }
 
-  let [response] = await conn.query(queryString, values);
+  let [rows, fields] = await conn.query(queryString, values);
 
   await endQuery(conn);
 
-  return response[0];
+  return rows[0];
 }
 
 export const getAllRows = async (tableName) => {

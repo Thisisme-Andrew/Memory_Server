@@ -14,12 +14,11 @@ export const createUser = async (req, res) => {
 }
 
 export const loginUser = async (req, res) => {
-  let { email, password } = req.body;
-  console.log("req.body received: " + JSON.stringify(req.body));
+  const { email, password } = req.query;
 
   try {
     const response = await login(email, password);
-    res.status(201).json({firstName, lastName, email, userID});
+    res.status(201).json({firstName: response.firstName, lastName: response.lastName, email: response.email, userID: response.userID});
   }catch (err) {
     console.log("error in controller (loginUser): " + err);
     res.status(500).json({ err });
