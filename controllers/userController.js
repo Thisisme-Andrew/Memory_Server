@@ -52,8 +52,8 @@ export const removeUser = async (req, res) => {
 }
 
 export const retreiveUser = async (req, res) => {
-  let { userID } = req.body;
-  console.log("req.body received: " + JSON.stringify(req.body));
+  let userID = req.params.id;
+  console.log("req.params.id received: " + JSON.stringify(req.params.id));
 
   try {
     const response = await getUserByID(userID);

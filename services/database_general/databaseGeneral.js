@@ -30,18 +30,23 @@ export const createTable = async (tableName, columnsAndTypes) => {
     queryString = queryString.concat(tableName, " (");
 
     for (const columnName in columnsAndTypes) {
-      const columnType = columnsAndTypes[columnName];
+      if(columnName !== "foreignKeys"){
+        const columnType = columnsAndTypes[columnName];
 
-      if(iterator == 0) {
-        queryString = queryString.concat(columnName, " ", columnType , " PRIMARY KEY, ");
-      }else if(iterator == Object.keys(columnsAndTypes).length - 1) {
-        queryString = queryString.concat(columnName, " ", columnType);
-        break;
-      }else {
-        queryString = queryString.concat(columnName, " ", columnType ,", ");
+        if(iterator == 0) {
+          queryString = queryString.concat(columnName, " ", columnType , " PRIMARY KEY, ");
+        }else if(iterator == Object.keys(columnsAndTypes).length - 1) {
+          queryString = queryString.concat(columnName, " ", columnType);
+          break;
+        }else {
+          queryString = queryString.concat(columnName, " ", columnType ,", ");
+        }
+
+        iterator++;
       }
-
-      iterator++;
+    }
+    if(columnsAndTypes.foreignKeys) {
+      queryString = queryString.concat(columnsAndTypes.foreignKeys);
     }
     queryString = queryString.concat(");");
 
@@ -138,11 +143,11 @@ export const getRowByID = async (tableName, primaryKeyName, primaryKeyValue) => 
   let queryString = "SELECT * FROM ";
   queryString = queryString.concat(tableName, " WHERE ", primaryKeyName, " = ", primaryKeyValue, ";");
 
-  let [response] = await conn.query(queryString);
+  let [rows, fields] = await conn.query(queryString);
 
   await endQuery(conn);
 
-  return response[0];
+  return rows[0];
 }
 
 //Should be used with caution (basically just for logging in with users and passwords cause emails are unique)
