@@ -2,7 +2,6 @@ import { createTable, deleteTable, insertRow, updateRow, getRowByID, getRow, get
 import { MEMORIES_TABLE_NAME, MEMORIES_TABLE_INIT_TYPES, MEMORY_PRIMARY_KEY_NAME, COLLABORATORS_TABLE_INIT_TYPES, COLLABORATORS_PRIMARY_KEY_NAME, COLLABORATORS_TABLE_NAME, IMAGES_TABLE_NAME_INIT_TYPES, IMAGES_TABLE_NAME } from "./constants.js";
 import { Memory } from "../../models/Memory.js";
 import { MemoryResponse } from '../../models/MemoryResponse.js'
-import { Collaborator } from "../../models/Collaborator.js";
 
 export const initMemories = async () => {
   try {
