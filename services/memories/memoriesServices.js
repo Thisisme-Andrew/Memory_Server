@@ -144,7 +144,7 @@ export const getCreatedAndCollaboratedMemories = async (userID) => {
     console.log("collaboratedMemories: " + collaboratedMemories)
 
 
-    return allMemories;
+    // return allMemories;
   } catch (err) {
     console.log("couldn't retreive memories for user");
     console.log(err);
