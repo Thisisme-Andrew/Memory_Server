@@ -1,6 +1,6 @@
 import { config } from '../../config/database.js';
 import mysql from "mysql2/promise";
-// import promise from "mysql2/promise";
+// import { createContainer, uploadBlob, downloadBlob, deleteContainer } from '../database_images/databaseImages.js'
 
 const connectToDatabase = async () => {
   try {
@@ -98,6 +98,82 @@ export const insertRow = async (tableName, columnsAndValues) => {
   await endQuery(conn);
   return response;
 }
+
+// only gives back response of the first table
+export const insertMemory = async (tableName1, tableName2, tableName3, columnsAndValues1, collaborators, images) => {
+  const conn = await connectToDatabase();
+  let containerName;
+  try {
+    await conn.beginTransaction();
+
+    //for memories table
+    let iterator1 = 0;
+    let queryString1 = "INSERT INTO ";
+    let valuesToBeAdded1 = [];
+    queryString1 = queryString1.concat(tableName1, " (");
+
+    for (const columnName in columnsAndValues1) {
+      let columnValue = columnsAndValues1[columnName];
+      valuesToBeAdded1.push(columnValue);
+
+      if (iterator1 === Object.keys(columnsAndValues1).length - 1) {
+        queryString1 = queryString1.concat(columnName, ") VALUES (");
+      } else {
+        queryString1 = queryString1.concat(columnName, ", ");
+      }
+
+      iterator1++;
+    }
+
+    const placeholders1 = valuesToBeAdded1.map(() => "?").join(", ");
+    queryString1 = queryString1.concat(placeholders1, ");");
+    console.log("queryString1: " + queryString1);
+    console.log("valuesToBeAdded1: " + valuesToBeAdded1);
+
+    let [response] = await conn.execute(queryString1, valuesToBeAdded1);
+    const memoryID = response.insertId;
+
+    // For collaborators table
+    for(let i = 0; i < collaborators.length; i++) {
+      let queryString2 = "INSERT INTO ";
+      queryString2 = queryString2.concat(tableName2, " (memoryID, userID) VALUES (?, ?);");
+
+      let valuesToBeAdded2 = [];
+      valuesToBeAdded2.push(memoryID);
+      valuesToBeAdded2.push(collaborators[i]);
+
+      console.log("queryString2: " + queryString2);
+      console.log("valuesToBeAdded2: " + valuesToBeAdded2);
+
+      await conn.execute(queryString2, valuesToBeAdded2);
+    }
+
+    //for images table
+    for(let i = 0; i < images.length; i++) {
+      let queryString3 = "INSERT INTO ";
+      queryString3 = queryString3.concat(tableName3, " (memoryID, url) VALUES (?, ?);");
+
+      let valuesToBeAdded3 = [];
+      valuesToBeAdded3.push(memoryID);
+      valuesToBeAdded3.push(images[i]);
+
+      console.log("queryString3: " + queryString3);
+      console.log("valuesToBeAdded3: " + valuesToBeAdded3);
+
+      await conn.execute(queryString3, valuesToBeAdded3);
+    }
+
+    await conn.commit();
+    return {memoryID};
+  }catch (err) {
+    await conn.rollback();
+    console.log("couldnt add memory")
+    throw err;
+  }finally {
+    await endQuery(conn);
+  }
+}
+
 
 // columnsAndValues is object where key = column name, value = row value
 export const updateRow = async (tableName, primaryKeyName, primaryKeyValue, columnsAndValues) => {
