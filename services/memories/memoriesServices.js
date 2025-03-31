@@ -99,7 +99,7 @@ export const getMemoryByID = async (memoryID) => {
   }
 }
 
-export const getMemoriesByUserID = async (userID) => {
+export const getCreatedMemories = async (userID) => {
   try {
     let response = await getAllRowsByValue(MEMORIES_TABLE_NAME, "creatorID", userID);
     if(!response.length) {
@@ -124,6 +124,25 @@ export const getMemoriesByUserID = async (userID) => {
 
       allMemories.push(MemoryResponse(memoryID, response[i].creatorID, response[i].longitude, response[i].latitude, collaboratorIDs, imageURLs));
     }
+
+    return allMemories;
+  } catch (err) {
+    console.log("couldn't retreive memories for user");
+    console.log(err);
+    return { err };
+  }
+}
+
+export const getCreatedAndCollaboratedMemories = async (userID) => {
+  try {
+    // gets the memory from memory table that user has created
+    const createdMemories = await getCreatedMemories(userID);
+    console.log("createdMemories: " + createdMemories)
+
+    // gets the images and collaborators from image and collaborator tables that user has created {memoryID, creatorID, longitude, latitude}
+    const collaboratedMemories = await getAllRowsByValue(COLLABORATORS_TABLE_NAME, "userID", userID);
+    console.log("collaboratedMemories: " + collaboratedMemories)
+
 
     return allMemories;
   } catch (err) {
