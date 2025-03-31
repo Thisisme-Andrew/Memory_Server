@@ -226,6 +226,19 @@ export const getRowByID = async (tableName, primaryKeyName, primaryKeyValue) => 
   return rows[0];
 }
 
+export const getAllRowsByValue = async (tableName, columnName, value) => {
+  const conn = await connectToDatabase();
+  let queryString = "SELECT * FROM ";
+  queryString = queryString.concat(tableName, " WHERE ", columnName, " = ", value, ";");
+
+  let [rows, fields] = await conn.query(queryString);
+  // console.log("rows was: " + JSON.stringify(rows));
+
+  await endQuery(conn);
+
+  return rows;
+}
+
 //Should be used with caution (basically just for logging in with users and passwords cause emails are unique)
 export const getRow = async (tableName, columnsAndValues) => {
   const conn = await connectToDatabase();

@@ -1,6 +1,7 @@
-import { createTable, deleteTable, insertRow, updateRow, getRowByID, getRow, getAllRows, insertMemory } from "../database_general/databaseGeneral.js";
+import { createTable, deleteTable, insertRow, updateRow, getRowByID, getRow, getAllRows, insertMemory, getAllRowsByValue } from "../database_general/databaseGeneral.js";
 import { MEMORIES_TABLE_NAME, MEMORIES_TABLE_INIT_TYPES, MEMORY_PRIMARY_KEY_NAME, COLLABORATORS_TABLE_INIT_TYPES, COLLABORATORS_PRIMARY_KEY_NAME, COLLABORATORS_TABLE_NAME, IMAGES_TABLE_NAME_INIT_TYPES, IMAGES_TABLE_NAME } from "./constants.js";
 import { Memory } from "../../models/Memory.js";
+import { MemoryResponse } from '../../models/MemoryResponse.js'
 import { Collaborator } from "../../models/Collaborator.js";
 
 export const initMemories = async () => {
@@ -48,8 +49,9 @@ export const addMemory = async (creatorID, longitude, latitude, collaborators = 
   try {
     //Made a special function for this in databaseGeneral, had to make it there to have connection object from mysql2/promise
     const memoryResponse = await insertMemory(MEMORIES_TABLE_NAME, COLLABORATORS_TABLE_NAME, IMAGES_TABLE_NAME, newMemory, collaborators, images);
+    const response = MemoryResponse(memoryResponse.memoryID, creatorID, longitude, latitude, collaborators, images);
 
-    return {memoryID: memoryResponse.memoryID, creatorID, longitude, latitude, collaborators, imageURLs: images};
+    return response;
   } catch (err) {
     console.log("Could not add Memory/collaborator");
     console.log(err);
@@ -97,22 +99,36 @@ export const getMemoryByID = async (memoryID) => {
   }
 }
 
-export const getAllMemoriesByUser = async () => {
-  // try {
-  //   const response = await getAllRows(MEMORIES_TABLE_NAME);
-  //   let userList = [];
+export const getMemoriesByUserID = async (userID) => {
+  try {
+    let response = await getAllRowsByValue(MEMORIES_TABLE_NAME, "creatorID", userID);
+    if(!response.length) {
+      throw "No memories with that userID";
+    }
 
-  //   for(const user of response) {
-  //     const {firstName, lastName, email, id} = user;
+    let allMemories = [];
 
-  //     userList.push({firstName, lastName, email, id});
-  //   }
+    for(let i = 0; i < response.length; i++) {
+      const memoryID = response[i].memoryID;
+      let collaboratorIDs = [];
+      let imageURLs = [];
 
-  //   console.log("retreived all Memory: " + JSON.stringify(userList));
-  //   return {body: userList};
-  // } catch (err) {
-  //   console.log("couldn't retreive memories for user");
-  //   console.log(err);
-  //   return {err: err};
-  // }
+      let collaborators = await getAllRowsByValue(COLLABORATORS_TABLE_NAME, "memoryID", memoryID);
+      for(let j = 0; j < collaborators.length; j++) {
+        collaboratorIDs.push(collaborators[j].userID);
+      }
+      let images = await getAllRowsByValue(IMAGES_TABLE_NAME, "memoryID", memoryID);
+      for(let j = 0; j < images.length; j++) {
+        imageURLs.push(images[j].url);
+      }
+
+      allMemories.push(MemoryResponse(memoryID, response[i].creatorID, response[i].longitude, response[i].latitude, collaboratorIDs, imageURLs));
+    }
+
+    return allMemories;
+  } catch (err) {
+    console.log("couldn't retreive memories for user");
+    console.log(err);
+    return { err };
+  }
 }
