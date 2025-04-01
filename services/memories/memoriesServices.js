@@ -135,15 +135,37 @@ export const getCreatedMemories = async (userID) => {
 export const getCreatedAndCollaboratedMemories = async (userID) => {
   try {
     // gets the memory from memory table that user has created
-    const createdMemories = await getCreatedMemories(userID);
-    console.log("createdMemories: " + createdMemories)
+    let createdMemories = await getCreatedMemories(userID);
+    console.log("createdMemories: " + JSON.stringify(createdMemories));
 
     // gets the images and collaborators from image and collaborator tables that user has created {memoryID, creatorID, longitude, latitude}
-    const collaboratedMemories = await getAllRowsByValue(COLLABORATORS_TABLE_NAME, "userID", userID);
-    console.log("collaboratedMemories: " + collaboratedMemories)
+    const collaboratedRowsFromCollaboratorsTable = await getAllRowsByValue(COLLABORATORS_TABLE_NAME, "userID", userID);
 
+    let collaboratedMemories = [];
+    for(let i = 0; i < collaboratedRowsFromCollaboratorsTable.length; i++) {
+      let memoryID = collaboratedRowsFromCollaboratorsTable[i].memoryID;
+      
+      let collaboratoredMemory = await getAllRowsByValue(MEMORIES_TABLE_NAME, MEMORY_PRIMARY_KEY_NAME, memoryID);
+      let creatorID = collaboratoredMemory[0].creatorID;
+      let longitude = collaboratoredMemory[0].longitude;
+      let latitude = collaboratoredMemory[0].latitude;
 
-    // return allMemories;
+      let collaboratorIDs = [];
+      let collaboratoredMemorysCollaborators = await getAllRowsByValue(COLLABORATORS_TABLE_NAME, "memoryID", memoryID);
+      for(let j = 0; j < collaboratoredMemorysCollaborators.length; j++) {
+        collaboratorIDs.push(collaboratoredMemorysCollaborators[j].userID);
+      }
+
+      let collaboratoredMemorysImagesObjects = await getAllRowsByValue(IMAGES_TABLE_NAME, "memoryID", memoryID);
+      let imageURLs = [];
+      for(let j = 0; j < collaboratoredMemorysImagesObjects.length; j++) {
+        imageURLs.push(collaboratoredMemorysImagesObjects[j].url);
+      }
+
+      collaboratedMemories.push(MemoryResponse(memoryID, creatorID, longitude, latitude, collaboratorIDs, imageURLs));
+    }
+
+    return {createdMemories, collaboratedMemories};
   } catch (err) {
     console.log("couldn't retreive memories for user");
     console.log(err);
