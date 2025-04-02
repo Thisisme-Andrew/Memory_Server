@@ -190,3 +190,39 @@ export const getMemoryByID = async (memoryID) => {
     return { err };
   }
 }
+
+export const getAllMemories = async () => {
+  try {
+    let response = await getAllRows(MEMORIES_TABLE_NAME);
+
+    if(!response) {
+      throw "No memories saved";
+    }
+    var memories = []
+
+    for(let i = 0; i < response.length; i++) {
+      var memoryID = response[i].memoryID;
+      let collaboratorIDs = [];
+      let imageURLs = [];
+
+      let collaborators = await getAllRowsByValue(COLLABORATORS_TABLE_NAME, "memoryID", memoryID);
+      for(let j = 0; j < collaborators.length; j++) {
+        collaboratorIDs.push(collaborators[j].userID);
+      }
+
+      let images = await getAllRowsByValue(IMAGES_TABLE_NAME, "memoryID", memoryID);
+      for(let j = 0; j < images.length; j++) {
+        imageURLs.push(images[j].url);
+      }
+
+      const memory = MemoryResponse(memoryID, response[0].creatorID, response[0].longitude, response[0].latitude, collaboratorIDs, imageURLs);
+      memories.push(memory)
+    }
+    console.log("memories is: " + JSON.stringify(memories));
+    return memories;
+  } catch (err) {
+    console.log("couldn't retreive memories for user");
+    console.log(err);
+    return { err };
+  }
+}
