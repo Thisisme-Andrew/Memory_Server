@@ -1,4 +1,4 @@
-import { addMemory, getCreatedMemories, getCreatedAndCollaboratedMemories } from '../services/memories/memoriesServices.js';
+import { addMemory, getCreatedMemories, getCreatedAndCollaboratedMemories, getMemoryByID } from '../services/memories/memoriesServices.js';
 
 export const createMemory = async (req, res) => {
   let { creatorID, longitude, latitude, collaborators, imageURLs } = req.body;
@@ -36,6 +36,20 @@ export const retreiveAllMemoriesAssociatedByUserID = async (req, res) => {
 
   try {
     const response = await getCreatedAndCollaboratedMemories(userID);
+    console.log("response at conntroller: " + JSON.stringify(response));
+    res.status(201).json(response);
+  }catch (err) {
+    console.log("error in controller (retreiveUser): " + err);
+    res.status(500).json({ err: err });
+  }
+}
+
+export const retrieveMemoryByID = async (req, res) => {
+  let memoryID = req.params.id;
+  console.log("req.param.memoryID received: " + JSON.stringify(req.params.id));
+
+  try {
+    const response = await getMemoryByID(memoryID);
     console.log("response at conntroller: " + JSON.stringify(response));
     res.status(201).json(response);
   }catch (err) {
