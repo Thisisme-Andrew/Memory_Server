@@ -1,11 +1,16 @@
 import { addMemory, getCreatedMemories, getCreatedAndCollaboratedMemories, getMemoryByID, getAllMemories } from '../services/memories/memoriesServices.js';
 
 export const createMemory = async (req, res) => {
-  let { creatorID, longitude, latitude, collaborators, imageURLs } = req.body;
+  let { creatorID, longitude, latitude, collaborators, imageURLs, isPrivate, name } = req.body;
   console.log("req.body received: " + JSON.stringify(req.body));
+  if(isPrivate === true) {
+    isPrivate = 1;
+  }else {
+    isPrivate = 0;
+  }
 
   try {
-    const response = await addMemory(creatorID, longitude, latitude, collaborators, imageURLs);
+    const response = await addMemory(creatorID, name, isPrivate, longitude, latitude, collaborators, imageURLs);
     console.log("response at conntroller: " + JSON.stringify(response));
     res.status(201).json(response);
   }catch (err) {
@@ -25,7 +30,7 @@ export const retrieveCreatedMemoriesByUserID = async (req, res) => {
     res.status(201).json(response);
   }catch (err) {
     console.log("error in controller (retreiveUser): " + err);
-    res.status(500).json({ err: err });
+    res.status(500).json({ err });
   }
 }
 
@@ -40,7 +45,7 @@ export const retreiveAllMemoriesAssociatedByUserID = async (req, res) => {
     res.status(201).json(response);
   }catch (err) {
     console.log("error in controller (retreiveUser): " + err);
-    res.status(500).json({ err: err });
+    res.status(500).json({ err });
   }
 }
 
@@ -54,7 +59,7 @@ export const retrieveMemoryByID = async (req, res) => {
     res.status(201).json(response);
   }catch (err) {
     console.log("error in controller (retreiveUser): " + err);
-    res.status(500).json({ err: err });
+    res.status(500).json({ err });
   }
 }
 
@@ -65,6 +70,6 @@ export const retrieveAllMemories = async (req, res) => {
     res.status(201).json(response);
   }catch (err) {
     console.log("error in controller (retreiveUser): " + err);
-    res.status(500).json({ err: err });
+    res.status(500).json({ err });
   }
 }

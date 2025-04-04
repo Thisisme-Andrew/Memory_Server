@@ -41,14 +41,19 @@ export const initImages = async () => {
 
 // collaboratrs should be a list of userIDs
 // images should be a list of urls
-export const addMemory = async (creatorID, longitude, latitude, collaborators = [], images = []) => {
-  const newMemory = Memory(creatorID, longitude, latitude);
+export const addMemory = async (creatorID, name, isPrivate, longitude, latitude, collaborators = [], images = []) => {
+  const newMemory = Memory(creatorID, name, isPrivate, longitude, latitude);
   console.log("newMemory: " + JSON.stringify(newMemory));
   
   try {
     //Made a special function for this in databaseGeneral, had to make it there to have connection object from mysql2/promise
     const memoryResponse = await insertMemory(MEMORIES_TABLE_NAME, COLLABORATORS_TABLE_NAME, IMAGES_TABLE_NAME, newMemory, collaborators, images);
-    const response = MemoryResponse(memoryResponse.memoryID, creatorID, longitude, latitude, collaborators, images);
+    if(isPrivate === 1) {
+      isPrivate = true;
+    }else {
+      isPrivate = false;
+    }
+    const response = MemoryResponse(memoryResponse.memoryID, creatorID, name, isPrivate, longitude, latitude, collaborators, images);
 
     return response;
   } catch (err) {

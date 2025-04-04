@@ -102,7 +102,7 @@ export const insertRow = async (tableName, columnsAndValues) => {
 // only gives back response of the first table
 export const insertMemory = async (tableName1, tableName2, tableName3, columnsAndValues1, collaborators, images) => {
   const conn = await connectToDatabase();
-  let containerName;
+  
   try {
     await conn.beginTransaction();
 

@@ -1,6 +1,8 @@
 export const MemoryResponse = (
   memoryID,
   creatorID,
+  name,
+  isPrivate,
   longitude,
   latitude,
   collaborators,
@@ -9,6 +11,8 @@ export const MemoryResponse = (
  return ({
   memoryID,
   creatorID,
+  name,
+  isPrivate,
   longitude,
   latitude,
   collaborators,

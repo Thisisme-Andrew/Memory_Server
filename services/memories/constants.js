@@ -3,6 +3,8 @@ export const COLLABORATORS_TABLE_NAME = "collaborators";
 export const IMAGES_TABLE_NAME = "images";
 export const MEMORIES_TABLE_INIT_TYPES = {
   memoryID: 'INT AUTO_INCREMENT',
+  name: "VARCHAR(100) not null",
+  isPrivate: "TINYINT(1) not null",
   creatorID: 'INT not null',
   longitude: 'DECIMAL(17, 14) not null',
   latitude: 'DECIMAL(17, 14) not null'
