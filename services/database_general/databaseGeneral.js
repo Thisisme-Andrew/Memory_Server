@@ -1,6 +1,5 @@
 import { config } from '../../config/database.js';
 import mysql from "mysql2/promise";
-// import { createContainer, uploadBlob, downloadBlob, deleteContainer } from '../database_images/databaseImages.js'
 
 const connectToDatabase = async () => {
   try {
@@ -174,6 +173,74 @@ export const insertMemory = async (tableName1, tableName2, tableName3, columnsAn
   }
 }
 
+export const addCollaborators = async (tableName, memoryID, collaborators) => {
+  // make sure that there is no duplicates in the table
+  let currentCollaborators = await getAllRowsByValue(tableName, "memoryID", memoryID);
+  console.log("currentCollaborators: " + JSON.stringify(currentCollaborators));
+  for(let i = 0; i < currentCollaborators.length; i++) {
+    const userIndex = collaborators.indexOf(currentCollaborators[i].userID);
+    if(userIndex > -1) {
+      collaborators.splice(userIndex, 1);
+    }
+  }
+  console.log("collaborators after is: " + JSON.stringify(collaborators));
+  
+  const conn = await connectToDatabase();
+  await conn.beginTransaction();
+
+  for(let i = 0; i < collaborators.length; i++) {
+    let queryString = "INSERT INTO ";
+    queryString = queryString.concat(tableName, " (memoryID, userID) VALUES (?, ?);");
+
+    let valuesToBeAdded = [];
+    valuesToBeAdded.push(memoryID);
+    valuesToBeAdded.push(collaborators[i]);
+
+    console.log("queryString: " + queryString);
+    console.log("valuesToBeAdded: " + valuesToBeAdded);
+
+    await conn.execute(queryString, valuesToBeAdded);
+  }
+
+  await conn.commit();
+  await endQuery(conn);
+  return "Successfully added all collaborator(s)";
+}
+
+
+export const addImages = async (tableName, memoryID, imageURLs) => {
+  let currentImages = await getAllRowsByValue(tableName, "memoryID", memoryID);
+  console.log("currentImages: " + JSON.stringify(currentImages));
+  for(let i = 0; i < currentImages.length; i++) {
+    const imageIndex = imageURLs.indexOf(currentImages[i].url);
+    if(imageIndex > -1) {
+      imageURLs.splice(imageIndex, 1);
+    }
+  }
+  console.log("imageURLs after is: " + JSON.stringify(imageURLs));
+
+  const conn = await connectToDatabase();
+  await conn.beginTransaction();
+
+  for(let i = 0; i < imageURLs.length; i++) {
+    let queryString = "INSERT INTO ";
+    queryString = queryString.concat(tableName, " (memoryID, url) VALUES (?, ?);");
+
+    let valuesToBeAdded = [];
+    valuesToBeAdded.push(memoryID);
+    valuesToBeAdded.push(imageURLs[i]);
+
+    console.log("queryString: " + queryString);
+    console.log("valuesToBeAdded: " + valuesToBeAdded);
+
+    await conn.execute(queryString, valuesToBeAdded);
+  }
+
+  await conn.commit();
+  await endQuery(conn);
+  return "Successfully added all image(s)";
+}
+
 
 // columnsAndValues is object where key = column name, value = row value
 export const updateRow = async (tableName, primaryKeyName, primaryKeyValue, columnsAndValues) => {
@@ -212,6 +279,36 @@ export const deleteRow = async (tableName, primaryKeyName, primaryKeyValue) => {
   await conn.query(queryString);
 
   await endQuery(conn);
+}
+
+// valuesOfRowsToDelete should be a in arrays in case there is multiple of a type to delete
+//mainColumnName should be the value you are basing your deletes off of, most likely the primary key
+export const deleteMultipleRows = async (tableName, mainColumnName, mainColumnValue, valuesOfRowsToDelete) => {
+  const conn = await connectToDatabase();
+
+  let queryString = "DELETE FROM ";
+  queryString = queryString.concat(tableName, " WHERE ", mainColumnName, " = ",  mainColumnValue);
+
+  for (const columnName in valuesOfRowsToDelete) {
+    let arrayOfValuesToDelete = valuesOfRowsToDelete[columnName];
+    queryString = queryString.concat(" AND (");
+
+    for(let i = 0; i < arrayOfValuesToDelete.length; i++) {
+      if (i === arrayOfValuesToDelete.length - 1) {
+        queryString = queryString.concat(columnName, " = ", arrayOfValuesToDelete[i]);
+      } else {
+        queryString = queryString.concat(columnName, " = ", arrayOfValuesToDelete[i], " OR ");
+      }
+    }
+    queryString = queryString.concat(")");
+  }
+
+  queryString = queryString.concat(";");
+
+  const [response] = await conn.query(queryString);
+
+  await endQuery(conn);
+  return response;
 }
 
 export const getRowByID = async (tableName, primaryKeyName, primaryKeyValue) => {

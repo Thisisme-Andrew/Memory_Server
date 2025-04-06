@@ -1,5 +1,16 @@
 import express from 'express';
-import { createMemory, retrieveCreatedMemoriesByUserID, retreiveAllMemoriesAssociatedByUserID, retrieveMemoryByID, retrieveAllMemories } from '../controllers/memoriesController.js';
+import { 
+  createMemory, 
+  retrieveCreatedMemoriesByUserID, 
+  retreiveAllMemoriesAssociatedByUserID, 
+  retrieveMemoryByID, 
+  retrieveAllMemories,
+  editMemoryLongitudeLatitude,
+  addCollaborators,
+  addImages,
+  removeMemoryCollaborators,
+  removeMemoryImages
+} from '../controllers/memoriesController.js';
 
 const router = express.Router();
 
@@ -8,5 +19,10 @@ router.get('/getAllByUser', retrieveCreatedMemoriesByUserID);
 router.get('/getAllWithCollaboratedByUser', retreiveAllMemoriesAssociatedByUserID);
 router.get('/all', retrieveAllMemories);
 router.get('/:id', retrieveMemoryByID);
+router.post('/editLongitudeLatitude', editMemoryLongitudeLatitude)
+router.post('/addCollaborators', addCollaborators)
+router.post('/addImages', addImages)
+router.delete('/removeCollaborators', removeMemoryCollaborators)
+router.delete('/removeImages', removeMemoryImages)
 
 export default router;

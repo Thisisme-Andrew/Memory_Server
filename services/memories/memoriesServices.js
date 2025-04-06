@@ -1,7 +1,29 @@
-import { createTable, deleteTable, insertRow, updateRow, getRowByID, getRow, getAllRows, insertMemory, getAllRowsByValue } from "../database_general/databaseGeneral.js";
-import { MEMORIES_TABLE_NAME, MEMORIES_TABLE_INIT_TYPES, MEMORY_PRIMARY_KEY_NAME, COLLABORATORS_TABLE_INIT_TYPES, COLLABORATORS_PRIMARY_KEY_NAME, COLLABORATORS_TABLE_NAME, IMAGES_TABLE_NAME_INIT_TYPES, IMAGES_TABLE_NAME } from "./constants.js";
 import { Memory } from "../../models/Memory.js";
 import { MemoryResponse } from '../../models/MemoryResponse.js'
+import { 
+  MEMORIES_TABLE_NAME,
+  MEMORIES_TABLE_INIT_TYPES, 
+  MEMORY_PRIMARY_KEY_NAME, 
+  COLLABORATORS_TABLE_INIT_TYPES, 
+  COLLABORATORS_PRIMARY_KEY_NAME, 
+  COLLABORATORS_TABLE_NAME, 
+  IMAGES_TABLE_NAME_INIT_TYPES, 
+  IMAGES_TABLE_NAME 
+} from "./constants.js";
+import { 
+  createTable, 
+  deleteTable, 
+  insertRow, 
+  updateRow, 
+  getRowByID, 
+  getRow, 
+  getAllRows, 
+  insertMemory, 
+  getAllRowsByValue, 
+  deleteMultipleRows, 
+  addCollaborators, 
+  addImages 
+} from "../database_general/databaseGeneral.js";
 
 export const initMemories = async () => {
   try {
@@ -63,11 +85,99 @@ export const addMemory = async (creatorID, name, isPrivate, longitude, latitude,
   }
 }
 
-export const updateMemory = async (memoryID, creatorID, longitude, latitude) => {
-  const updatedMemory = Memory(creatorID, longitude, latitude);
+export const updateMemoryLongitudeLatitude = async (memoryID, longitude, latitude) => {
+  let updatedMemory;
+  
+  if( longitude && latitude ) {
+    updatedMemory = { longitude, latitude };  
+  }else if( longitude ) {
+    updatedMemory = { longitude };
+  }else if( latitude ) {
+    updatedMemory = { latitude };
+  }else {
+    throw "No Longitude and/or latitude received";
+  }
+  
 
   try {
     const response = await updateRow(MEMORIES_TABLE_NAME, MEMORY_PRIMARY_KEY_NAME, memoryID, updatedMemory);
+    console.log("Memory updated successfully");
+    return response;
+  } catch (err) {
+    console.log("Could not update Memory");
+    console.log(err);
+    throw err;
+  }
+}
+
+// collaborators should come as an array of userIDs
+export const addCollaboratorsByMemoryID = async (memoryID, collaborators) => {
+  try {
+    const response = await addCollaborators(COLLABORATORS_TABLE_NAME, memoryID, collaborators);
+    if(!response) {
+      throw "error with your request"
+    }
+    console.log("Collaborator(s) added successfully");
+    return response;
+  } catch (err) {
+    console.log("Could not add Collaborator(s)");
+    console.log(err);
+    throw err;
+  }
+}
+
+export const addImagesByMemoryID = async (memoryID, imageURLs) => {
+  try {
+    const response = await addImages(IMAGES_TABLE_NAME, memoryID, imageURLs);
+    if(!response) {
+      throw "error with your request"
+    }
+    console.log("Image(s) added successfully");
+    return response;
+  } catch (err) {
+    console.log("Could not add image(s)");
+    console.log(err);
+    throw err;
+  }
+}
+
+// collaborators should come as an array of userIDs
+export const removeCollaboratorsByMemoryID = async (memoryID, collaborators) => {
+  let collaboratorsInfo = {userID: collaborators}
+  
+  try {
+    const response = await deleteMultipleRows(COLLABORATORS_TABLE_NAME, MEMORY_PRIMARY_KEY_NAME, memoryID, collaboratorsInfo);
+    if(response.affectedRows === 0) {
+      throw "Collaborators were not associated with this memory, no changes were made. Please try again."
+    }
+    if(!response) {
+      throw "error with your request"
+    }
+    console.log("Memory updated successfully");
+    return response;
+  } catch (err) {
+    console.log("Could not update Memory");
+    console.log(err);
+    throw err;
+  }
+}
+
+// imageURLs should come as an array of imageURLs
+export const removeImagesByMemoryID = async (memoryID, imageURLs) => {
+  for(let i = 0; i < imageURLs.length; i++) {
+    imageURLs[i] = "'" + imageURLs[i] + "'";
+  }
+  
+  let imagesInfo = {url: imageURLs}
+  
+  try {
+    const response = await deleteMultipleRows(IMAGES_TABLE_NAME, MEMORY_PRIMARY_KEY_NAME, memoryID, imagesInfo);
+    if(response.affectedRows === 0) {
+      throw "Images were not associated with this memory, no changes were made. Please try again."
+    }
+    if(!response) {
+      throw "error with your request"
+    }
     console.log("Memory updated successfully");
     return response;
   } catch (err) {

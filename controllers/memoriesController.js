@@ -1,4 +1,15 @@
-import { addMemory, getCreatedMemories, getCreatedAndCollaboratedMemories, getMemoryByID, getAllMemories } from '../services/memories/memoriesServices.js';
+import { 
+  addMemory, 
+  getCreatedMemories, 
+  getCreatedAndCollaboratedMemories, 
+  getMemoryByID, 
+  getAllMemories, 
+  updateMemoryLongitudeLatitude, 
+  addCollaboratorsByMemoryID, 
+  addImagesByMemoryID, 
+  removeCollaboratorsByMemoryID, 
+  removeImagesByMemoryID 
+} from '../services/memories/memoriesServices.js';
 
 export const createMemory = async (req, res) => {
   let { creatorID, longitude, latitude, collaborators, imageURLs, isPrivate, name } = req.body;
@@ -66,6 +77,71 @@ export const retrieveMemoryByID = async (req, res) => {
 export const retrieveAllMemories = async (req, res) => {
   try {
     const response = await getAllMemories();
+    console.log("response at conntroller: " + JSON.stringify(response));
+    res.status(201).json(response);
+  }catch (err) {
+    console.log("error in controller (retreiveUser): " + err);
+    res.status(500).json({ err });
+  }
+}
+
+export const editMemoryLongitudeLatitude = async (req, res) => {
+  let { memoryID, longitude, latitude } = req.body;
+
+  try {
+    const response = await updateMemoryLongitudeLatitude(memoryID, longitude, latitude);
+    console.log("response at conntroller: " + JSON.stringify(response));
+    res.status(201).json(response);
+  }catch (err) {
+    console.log("error in controller (editMemoryLongitudeLatitude): " + err);
+    res.status(500).json({ err });
+  }
+}
+
+export const addCollaborators = async (req, res) => {
+  let { memoryID, collaborators } = req.body;
+
+  try {
+    const response = await addCollaboratorsByMemoryID(memoryID, collaborators);
+    console.log("response at conntroller: " + JSON.stringify(response));
+    res.status(201).json(response);
+  }catch (err) {
+    console.log("error in controller (addCollaborators): " + err);
+    res.status(500).json({ err });
+  }
+}
+
+export const addImages = async (req, res) => {
+  let { memoryID, imageURLs } = req.body;
+  
+  try {
+    const response = await addImagesByMemoryID(memoryID, imageURLs);
+    console.log("response at conntroller: " + JSON.stringify(response));
+    res.status(201).json(response);
+  }catch (err) {
+    console.log("error in controller (retreiveUser): " + err);
+    res.status(500).json({ err });
+  }
+}
+
+export const removeMemoryCollaborators = async (req, res) => {
+  let { memoryID, collaborators } = req.body;
+
+  try {
+    const response = await removeCollaboratorsByMemoryID(memoryID, collaborators);
+    console.log("response at conntroller: " + JSON.stringify(response));
+    res.status(201).json(response);
+  }catch (err) {
+    console.log("error in controller (retreiveUser): " + err);
+    res.status(500).json({ err });
+  }
+}
+
+export const removeMemoryImages = async (req, res) => {
+  let { memoryID, imageURLs } = req.body;
+
+  try {
+    const response = await removeImagesByMemoryID(memoryID, imageURLs);
     console.log("response at conntroller: " + JSON.stringify(response));
     res.status(201).json(response);
   }catch (err) {
