@@ -223,7 +223,7 @@ export const getCreatedMemories = async (userID) => {
         imageURLs.push(images[j].url);
       }
 
-      allMemories.push(MemoryResponse(memoryID, response[i].creatorID, response[i].longitude, response[i].latitude, collaboratorIDs, imageURLs));
+      allMemories.push(MemoryResponse(memoryID, response[i].creatorID, response[i].name, response[i].isPrivate, response[i].longitude, response[i].latitude, collaboratorIDs, imageURLs));
     }
 
     return allMemories;
@@ -251,6 +251,8 @@ export const getCreatedAndCollaboratedMemories = async (userID) => {
       let creatorID = collaboratoredMemory[0].creatorID;
       let longitude = collaboratoredMemory[0].longitude;
       let latitude = collaboratoredMemory[0].latitude;
+      let name = collaboratoredMemory[0].name;
+      let isPrivate = collaboratoredMemory[0].isPrivate;
 
       let collaboratorIDs = [];
       let collaboratoredMemorysCollaborators = await getAllRowsByValue(COLLABORATORS_TABLE_NAME, "memoryID", memoryID);
@@ -264,7 +266,7 @@ export const getCreatedAndCollaboratedMemories = async (userID) => {
         imageURLs.push(collaboratoredMemorysImagesObjects[j].url);
       }
 
-      collaboratedMemories.push(MemoryResponse(memoryID, creatorID, longitude, latitude, collaboratorIDs, imageURLs));
+      collaboratedMemories.push(MemoryResponse(memoryID, creatorID, name, isPrivate, longitude, latitude, collaboratorIDs, imageURLs));
     }
 
     return {createdMemories, collaboratedMemories};
@@ -296,7 +298,7 @@ export const getMemoryByID = async (memoryID) => {
       imageURLs.push(images[j].url);
     }
 
-    const memory = MemoryResponse(memoryID, response[0].creatorID, response[0].longitude, response[0].latitude, collaboratorIDs, imageURLs);
+    const memory = MemoryResponse(memoryID, response[0].creatorID, response[0].name, response[0].isPrivate, response[0].longitude, response[0].latitude, collaboratorIDs, imageURLs);
     
     return memory;
   } catch (err) {
@@ -330,7 +332,7 @@ export const getAllMemories = async () => {
         imageURLs.push(images[j].url);
       }
 
-      const memory = MemoryResponse(memoryID, response[0].creatorID, response[0].longitude, response[0].latitude, collaboratorIDs, imageURLs);
+      const memory = MemoryResponse(memoryID, response[0].creatorID, response[0].name, response[0].isPrivate, response[0].longitude, response[0].latitude, collaboratorIDs, imageURLs);
       memories.push(memory)
     }
     console.log("memories is: " + JSON.stringify(memories));
