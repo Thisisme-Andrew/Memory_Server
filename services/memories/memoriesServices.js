@@ -22,7 +22,8 @@ import {
   getAllRowsByValue, 
   deleteMultipleRows, 
   addCollaborators, 
-  addImages 
+  addImages,
+  deleteMemoryByID
 } from "../database_general/databaseGeneral.js";
 
 export const initMemories = async () => {
@@ -189,8 +190,8 @@ export const removeImagesByMemoryID = async (memoryID, imageURLs) => {
 
 export const deleteMemory = async (memoryID) => {
   try {
-    const response = await deleteRow(MEMORIES_TABLE_NAME, MEMORY_PRIMARY_KEY_NAME, memoryID);
-    // will need to delete from collaborators too
+    const response = await deleteMemoryByID(memoryID);
+    
     console.log("Memory deleted successfully");
     return response;
   } catch (err) {

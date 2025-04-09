@@ -8,7 +8,8 @@ import {
   addCollaboratorsByMemoryID, 
   addImagesByMemoryID, 
   removeCollaboratorsByMemoryID, 
-  removeImagesByMemoryID 
+  removeImagesByMemoryID,
+  deleteMemory
 } from '../services/memories/memoriesServices.js';
 
 export const createMemory = async (req, res) => {
@@ -142,6 +143,18 @@ export const removeMemoryImages = async (req, res) => {
 
   try {
     const response = await removeImagesByMemoryID(memoryID, imageURLs);
+    console.log("response at conntroller: " + JSON.stringify(response));
+    res.status(201).json(response);
+  }catch (err) {
+    console.log("error in controller (retreiveUser): " + err);
+    res.status(500).json({ err });
+  }
+}
+
+export const removeMemory = async (req, res) => {
+  let { memoryID } = req.body;
+  try {
+    const response = await deleteMemory(memoryID);
     console.log("response at conntroller: " + JSON.stringify(response));
     res.status(201).json(response);
   }catch (err) {

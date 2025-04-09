@@ -1,5 +1,6 @@
 import { config } from '../../config/database.js';
 import mysql from "mysql2/promise";
+import { MEMORIES_TABLE_NAME, COLLABORATORS_TABLE_NAME, IMAGES_TABLE_NAME, MEMORY_PRIMARY_KEY_NAME, COLLABORATORS_PRIMARY_KEY_NAME, IMAGES_PRIMARY_KEY_NAME } from '../memories/constants.js';
 
 const connectToDatabase = async () => {
   try {
@@ -173,9 +174,40 @@ export const insertMemory = async (tableName1, tableName2, tableName3, columnsAn
   }
 }
 
+// This is also special function for deleting memories
+// this doesnt delete from blob memory, you have to figure out a way to do that if you wanted to do that
+export const deleteMemoryByID = async (memoryID) => {
+  console.log("--DELETING MEMORY--")
+  const conn = await connectToDatabase();
+  await conn.beginTransaction();
+
+  try {
+    let queryStringForCollaboratorsTable = "DELETE FROM " + COLLABORATORS_TABLE_NAME + " WHERE " + MEMORY_PRIMARY_KEY_NAME + " = " + memoryID + ";";
+    let queryStringForImagesTable = "DELETE FROM " + IMAGES_TABLE_NAME + " WHERE " + MEMORY_PRIMARY_KEY_NAME + " = " + memoryID + ";";
+    let queryStringForMemoryTable = "DELETE FROM " + MEMORIES_TABLE_NAME + " WHERE " + MEMORY_PRIMARY_KEY_NAME + " = " + memoryID + ";";
+
+    let [collaboratorsTableResponse] = await conn.execute(queryStringForCollaboratorsTable);
+    let [imagesTableResponse] = await conn.execute(queryStringForImagesTable);
+    let [memoryTableResponse] = await conn.execute(queryStringForMemoryTable);
+
+    console.log("memoryTableResponse: " + JSON.stringify(memoryTableResponse));
+    console.log("collaboratorsTableResponse: " + JSON.stringify(collaboratorsTableResponse));
+    console.log("imagesTableResponse: " + JSON.stringify(imagesTableResponse));
+    await conn.commit();
+  }catch (err) {
+    await conn.rollback();
+    console.log("couldnt delete memory")
+    throw err;
+  }finally {
+    await endQuery(conn);
+    console.log("Memory deleted Successfully");
+    return {message: "Memory deleted Successfully"};
+  }
+}
+
 export const addCollaborators = async (tableName, memoryID, collaborators) => {
   // make sure that there is no duplicates in the table
-  let currentCollaborators = await getAllRowsByValue(tableName, "memoryID", memoryID);
+  let currentCollaborators = await getAllRowsByValue(tableName, MEMORY_PRIMARY_KEY_NAME, memoryID);
   console.log("currentCollaborators: " + JSON.stringify(currentCollaborators));
   for(let i = 0; i < currentCollaborators.length; i++) {
     const userIndex = collaborators.indexOf(currentCollaborators[i].userID);
@@ -209,7 +241,7 @@ export const addCollaborators = async (tableName, memoryID, collaborators) => {
 
 
 export const addImages = async (tableName, memoryID, imageURLs) => {
-  let currentImages = await getAllRowsByValue(tableName, "memoryID", memoryID);
+  let currentImages = await getAllRowsByValue(tableName, MEMORY_PRIMARY_KEY_NAME, memoryID);
   console.log("currentImages: " + JSON.stringify(currentImages));
   for(let i = 0; i < currentImages.length; i++) {
     const imageIndex = imageURLs.indexOf(currentImages[i].url);
@@ -289,18 +321,20 @@ export const deleteMultipleRows = async (tableName, mainColumnName, mainColumnVa
   let queryString = "DELETE FROM ";
   queryString = queryString.concat(tableName, " WHERE ", mainColumnName, " = ",  mainColumnValue);
 
-  for (const columnName in valuesOfRowsToDelete) {
-    let arrayOfValuesToDelete = valuesOfRowsToDelete[columnName];
-    queryString = queryString.concat(" AND (");
-
-    for(let i = 0; i < arrayOfValuesToDelete.length; i++) {
-      if (i === arrayOfValuesToDelete.length - 1) {
-        queryString = queryString.concat(columnName, " = ", arrayOfValuesToDelete[i]);
-      } else {
-        queryString = queryString.concat(columnName, " = ", arrayOfValuesToDelete[i], " OR ");
+  if(valuesOfRowsToDelete) {
+    for (const columnName in valuesOfRowsToDelete) {
+      let arrayOfValuesToDelete = valuesOfRowsToDelete[columnName];
+      queryString = queryString.concat(" AND (");
+  
+      for(let i = 0; i < arrayOfValuesToDelete.length; i++) {
+        if (i === arrayOfValuesToDelete.length - 1) {
+          queryString = queryString.concat(columnName, " = ", arrayOfValuesToDelete[i]);
+        } else {
+          queryString = queryString.concat(columnName, " = ", arrayOfValuesToDelete[i], " OR ");
+        }
       }
+      queryString = queryString.concat(")");
     }
-    queryString = queryString.concat(")");
   }
 
   queryString = queryString.concat(";");
