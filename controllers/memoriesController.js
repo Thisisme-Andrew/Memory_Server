@@ -4,7 +4,8 @@ import {
   getCreatedAndCollaboratedMemories, 
   getMemoryByID, 
   getAllMemories, 
-  updateMemoryLongitudeLatitude, 
+  updateMemoryLongitudeLatitude,
+  updateMemoryTitle, 
   addCollaboratorsByMemoryID, 
   addImagesByMemoryID, 
   removeCollaboratorsByMemoryID, 
@@ -95,6 +96,19 @@ export const editMemoryLongitudeLatitude = async (req, res) => {
     res.status(201).json(response);
   }catch (err) {
     console.log("error in controller (editMemoryLongitudeLatitude): " + err);
+    res.status(500).json({ err });
+  }
+}
+
+export const editMemoryTitle = async (req, res) => {
+  let { memoryID, title } = req.body;
+
+  try {
+    const response = await updateMemoryTitle(memoryID, title);
+    console.log("response at conntroller: " + JSON.stringify(response));
+    res.status(201).json(response);
+  }catch (err) {
+    console.log("error in controller (editMemoryTitle): " + err);
     res.status(500).json({ err });
   }
 }

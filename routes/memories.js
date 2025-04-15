@@ -6,6 +6,7 @@ import {
   retrieveMemoryByID, 
   retrieveAllMemories,
   editMemoryLongitudeLatitude,
+  editMemoryTitle,
   addCollaborators,
   addImages,
   removeMemoryCollaborators,
@@ -21,6 +22,7 @@ router.get('/getAllWithCollaboratedByUser', retreiveAllMemoriesAssociatedByUserI
 router.get('/all', retrieveAllMemories);
 router.get('/:id', retrieveMemoryByID);
 router.post('/editLongitudeLatitude', editMemoryLongitudeLatitude);
+router.post('/editTitle', editMemoryTitle)
 router.post('/addCollaborators', addCollaborators);
 router.post('/addImages', addImages);
 router.delete('/removeCollaborators', removeMemoryCollaborators);

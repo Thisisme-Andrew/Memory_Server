@@ -90,15 +90,35 @@ export const updateMemoryLongitudeLatitude = async (memoryID, longitude, latitud
   let updatedMemory;
   
   if( longitude && latitude ) {
-    updatedMemory = { longitude, latitude };  
+    updatedMemory = { "longitude": longitude, "latitude": latitude };  
   }else if( longitude ) {
-    updatedMemory = { longitude };
+    updatedMemory = { "longitude": longitude };
   }else if( latitude ) {
-    updatedMemory = { latitude };
+    updatedMemory = { "latitude": latitude };
   }else {
     throw "No Longitude and/or latitude received";
   }
   
+
+  try {
+    const response = await updateRow(MEMORIES_TABLE_NAME, MEMORY_PRIMARY_KEY_NAME, memoryID, updatedMemory);
+    console.log("Memory updated successfully");
+    return response;
+  } catch (err) {
+    console.log("Could not update Memory");
+    console.log(err);
+    throw err;
+  }
+}
+
+export const updateMemoryTitle = async (memoryID, title) => {
+  let updatedMemory;
+  
+  if( title ) {
+    updatedMemory = { "name": title };  
+  }else {
+    throw "No title received";
+  }
 
   try {
     const response = await updateRow(MEMORIES_TABLE_NAME, MEMORY_PRIMARY_KEY_NAME, memoryID, updatedMemory);
