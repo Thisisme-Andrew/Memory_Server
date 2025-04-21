@@ -134,7 +134,7 @@ export const updateMemoryTitle = async (memoryID, title) => {
 export const updateMemoryIsPrivate = async (memoryID, isPrivate) => {
   let updatedMemory;
   
-  if( title ) {
+  if( isPrivate ) {
     updatedMemory = { "isPrivate": isPrivate };  
   }else {
     throw "No privacy value received";
