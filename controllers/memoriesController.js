@@ -5,7 +5,8 @@ import {
   getMemoryByID, 
   getAllMemories, 
   updateMemoryLongitudeLatitude,
-  updateMemoryTitle, 
+  updateMemoryTitle,
+  updateMemoryIsPrivate,
   addCollaboratorsByMemoryID, 
   addImagesByMemoryID, 
   removeCollaboratorsByMemoryID, 
@@ -109,6 +110,19 @@ export const editMemoryTitle = async (req, res) => {
     res.status(201).json(response);
   }catch (err) {
     console.log("error in controller (editMemoryTitle): " + err);
+    res.status(500).json({ err });
+  }
+}
+
+export const editIsPrivate = async (req, res) => {
+  let { memoryID, isPrivate } = req.body;
+
+  try {
+    const response = await updateMemoryIsPrivate(memoryID, isPrivate);
+    console.log("response at conntroller: " + JSON.stringify(response));
+    res.status(201).json(response);
+  }catch (err) {
+    console.log("error in controller (editMemoryIsPrivate): " + err);
     res.status(500).json({ err });
   }
 }

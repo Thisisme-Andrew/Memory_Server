@@ -131,6 +131,26 @@ export const updateMemoryTitle = async (memoryID, title) => {
   }
 }
 
+export const updateMemoryIsPrivate = async (memoryID, isPrivate) => {
+  let updatedMemory;
+  
+  if( title ) {
+    updatedMemory = { "isPrivate": isPrivate };  
+  }else {
+    throw "No privacy value received";
+  }
+
+  try {
+    const response = await updateRow(MEMORIES_TABLE_NAME, MEMORY_PRIMARY_KEY_NAME, memoryID, updatedMemory);
+    console.log("Memory updated successfully");
+    return response;
+  } catch (err) {
+    console.log("Could not update Memory");
+    console.log(err);
+    throw err;
+  }
+}
+
 // collaborators should come as an array of userIDs
 export const addCollaboratorsByMemoryID = async (memoryID, collaborators) => {
   try {
@@ -258,8 +278,14 @@ export const getCreatedMemories = async (userID) => {
 export const getCreatedAndCollaboratedMemories = async (userID) => {
   try {
     // gets the memory from memory table that user has created
-    let createdMemories = await getCreatedMemories(userID);
-    console.log("createdMemories: " + JSON.stringify(createdMemories));
+    let createdMemories = [];
+    
+    try {
+      createdMemories = await getCreatedMemories(userID);
+      console.log("createdMemories: " + JSON.stringify(createdMemories));
+    } catch (err) {
+      createdMemories = [];
+    }
 
     // gets the images and collaborators from image and collaborator tables that user has created {memoryID, creatorID, longitude, latitude}
     const collaboratedRowsFromCollaboratorsTable = await getAllRowsByValue(COLLABORATORS_TABLE_NAME, "userID", userID);
